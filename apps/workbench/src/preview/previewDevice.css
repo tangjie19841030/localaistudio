@@ -1,0 +1,20 @@
+/*
+ * Device-responsive Schema 预览 paper.
+ *
+ * The paper renders at the selected device preset width inside a scaled
+ * wrapper, so viewport media queries never reach the document content.
+ * Responsive behavior is now declared PER NODE (W4-A `breakpoints`): the
+ * renderer resolves the overlay for the active viewport and hands the kit
+ * component the effective props. The container-type declaration is kept as the
+ * anchor for future CSS-level extensions; the global collapse rules that used
+ * to force every Grid/MetricGrid into 2 or 1 columns were RETIRED here — they
+ * fought the author's own intent (an author declaring "2 columns on tablet"
+ * was re-collapsed to 1). A document without overrides now renders the same
+ * composition at all three viewports, which is the intended W4-A semantics.
+ *
+ * Scoped to the schema preview frame on purpose — the free canvas, the right
+ * panel and generated (codegen) apps are unaffected.
+ */
+[data-testid="preview-frame"] {
+  container-type: inline-size;
+}

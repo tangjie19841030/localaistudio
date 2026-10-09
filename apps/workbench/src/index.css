@@ -1,0 +1,332 @@
+@import "tailwindcss";
+
+/* Three-view drift fix (canvas parity): Tailwind v4 auto-scan only follows
+ * CSS-imported modules; the workbench canvas renders into workbench DOM and
+ * did not see codegen-copied kit files. Explicit @source pulls them in.
+ * Paths are relative to this file (apps/workbench/src/index.css). */
+@source "../../../packages/ui-kit/src/components/**/*.tsx";
+@source "../../../data/projects/*/src/components/ui-studio/**/*.tsx";
+@source "../../../data/projects/*/src/components/generated/**/*.tsx";
+@source "../../../data/projects/*/src/pages/**/*.tsx";
+
+/* ============================================================
+   Local AI UI Studio — 设计令牌层（v2，UI设计系统技能改造）
+   方向：premium SaaS dashboard，dark-first + light parity。
+
+   原则（design-system-skills.md）：
+   1. 中性优先：80-90% 界面是中性表面，单一主强调色给动作与焦点，
+      语义色只用于状态。
+   2. 层次靠表面分层 + 分层阴影 + 顶部高光，不靠装饰渐变。
+   3. 圆角层级：控件 8 / 输入与小卡 12 / 面板 16 / 弹层 20-24。
+   4. 色板 OKLCH（hue 260 蓝紫族，accent 与旧 #5E6AD2 同族延续）。
+   5. 字体全部系统栈（项目宪法：默认离线，无网络字体）。
+   6. dark-first：:root 即深色；[data-theme="light"] 翻转为浅色。
+   ============================================================ */
+@theme {
+  /* 灰阶文字（深色为默认；5 级） */
+  --color-ink: oklch(0.965 0.008 260);
+  --color-ink-soft: oklch(0.83 0.012 260);
+  --color-ink-muted: oklch(0.72 0.015 260);
+  --color-ink-faint: oklch(0.56 0.018 260);
+  --color-ink-ghost: oklch(0.36 0.02 260);
+
+  /* 背景 4 级（由深到浅：应用底 → 面板 → 画布区 → 弹层） */
+  --color-canvas: oklch(0.15 0.012 260);
+  --color-surface: oklch(0.19 0.014 260);
+  --color-rail: oklch(0.23 0.016 260);
+  --color-overlay: oklch(0.26 0.018 260);
+
+  /* hairline 边框（默认 / 强调） */
+  --color-hairline: oklch(0.3 0.018 260);
+  --color-hairline-strong: oklch(0.38 0.02 260);
+
+  /* 单一强调色（蓝紫，仅给关键动作与焦点） */
+  --color-accent: oklch(0.62 0.19 285); /* Figma 选中蓝紫 #7B61FF 同族 */
+  --color-accent-hover: oklch(0.68 0.18 285);
+  --color-accent-pressed: oklch(0.55 0.18 285);
+  --color-accent-soft: oklch(0.62 0.19 285 / 0.14);
+
+  /* 语义色（只用于状态；柔和底为低透明度色调） */
+  --color-success: oklch(0.77 0.15 155);
+  --color-success-soft: oklch(0.77 0.15 155 / 0.14);
+  --color-warn: oklch(0.82 0.14 85);
+  --color-warn-soft: oklch(0.82 0.14 85 / 0.14);
+  --color-danger: oklch(0.7 0.18 22);
+  --color-danger-soft: oklch(0.7 0.18 22 / 0.14);
+
+  /* 圆角层级：控件 8 / 输入小卡 12 / 面板 16 / 弹层 20-24 */
+  --radius-sm: 8px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-3xl: 24px;
+
+  /* 分层阴影 + 顶部高光（elevated surface 专属，小控件不加） */
+  --shadow-card:
+    inset 0 1px 0 rgb(255 255 255 / 0.05), 0 1px 2px rgb(0 0 0 / 0.06),
+    0 4px 12px rgb(0 0 0 / 0.1);
+  --shadow-pop:
+    inset 0 1px 0 rgb(255 255 255 / 0.06), 0 4px 12px -2px rgb(0 0 0 / 0.14),
+    0 12px 32px -4px rgb(0 0 0 / 0.16);
+  --shadow-modal:
+    inset 0 1px 0 rgb(255 255 255 / 0.07), 0 16px 32px -8px rgb(0 0 0 / 0.22),
+    0 32px 64px -8px rgb(0 0 0 / 0.24);
+
+  /* 字体（系统字体栈，无网络字体） */
+  --font-sans: system-ui, -apple-system, "Segoe UI", "PingFang SC",
+    "Microsoft YaHei UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono",
+    Consolas, "Courier New", monospace;
+
+  /* 动效节奏（轻快、克制；控件 120-180ms / 面板 160-220ms）
+     时长变量 --duration-control / --duration-panel 定义在下方
+     @layer base :root，避免 @theme 非标准命名空间被 tree-shake。 */
+  --ease-out-soft: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-soft: cubic-bezier(0.4, 0, 0.2, 1);
+  --animate-rise: rise-in 0.4s var(--ease-out-soft) both;
+}
+
+/* ============================================================
+   浅色主题（light parity）——只重映射值，令牌名不变
+   ============================================================ */
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* 背景 4 级（由深到浅） */
+  --color-canvas: oklch(0.945 0.008 260);
+  --color-surface: oklch(0.97 0.006 260);
+  --color-rail: oklch(1 0 0);
+  --color-overlay: oklch(1 0 0);
+
+  /* hairline 边框 */
+  --color-hairline: oklch(0.9 0.008 260);
+  --color-hairline-strong: oklch(0.85 0.01 260);
+
+  /* 灰阶文字 */
+  --color-ink: oklch(0.24 0.02 260);
+  --color-ink-soft: oklch(0.42 0.02 260);
+  --color-ink-muted: oklch(0.52 0.02 260);
+  --color-ink-faint: oklch(0.66 0.016 260);
+  --color-ink-ghost: oklch(0.88 0.008 260);
+
+  /* 强调色：浅底上加深保对比 */
+  --color-accent: oklch(0.55 0.2 285); /* 浅色下对应 Figma #7B61FF 加深 */
+  --color-accent-hover: oklch(0.5 0.19 285);
+  --color-accent-pressed: oklch(0.45 0.18 285);
+  --color-accent-soft: oklch(0.55 0.2 285 / 0.1);
+
+  /* 语义色：浅底加深 + 柔和底改浅色调 */
+  --color-success: oklch(0.58 0.16 155);
+  --color-success-soft: oklch(0.58 0.16 155 / 0.1);
+  --color-warn: oklch(0.68 0.15 75);
+  --color-warn-soft: oklch(0.68 0.15 75 / 0.1);
+  --color-danger: oklch(0.58 0.18 22);
+  --color-danger-soft: oklch(0.58 0.18 22 / 0.1);
+
+  /* 浅色阴影更轻 */
+  --shadow-card:
+    inset 0 1px 0 rgb(255 255 255 / 0.6), 0 1px 2px rgb(0 0 0 / 0.04),
+    0 2px 8px rgb(0 0 0 / 0.04);
+  --shadow-pop:
+    inset 0 1px 0 rgb(255 255 255 / 0.7), 0 4px 12px -2px rgb(0 0 0 / 0.08),
+    0 12px 32px -4px rgb(0 0 0 / 0.1);
+  --shadow-modal:
+    inset 0 1px 0 rgb(255 255 255 / 0.8), 0 16px 32px -8px rgb(0 0 0 / 0.12),
+    0 32px 64px -8px rgb(0 0 0 / 0.14);
+}
+
+/* ============================================================
+   全局基础样式
+   ============================================================ */
+@layer base {
+  /* 动效时长令牌：控件 150ms / 面板 180ms（统一视觉参数）
+     放在 @layer base :root 而非 @theme，保证不被 tree-shake，
+     供本文件与组件内 var() / 任意值语法直接引用。 */
+  :root {
+    --duration-control: 150ms;
+    --duration-panel: 180ms;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+
+  [data-theme="light"] {
+    color-scheme: light;
+  }
+
+  /* 正文基准：编辑器 chrome 13px（Figma/Linear 密度） */
+  body {
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    line-height: 1.55;
+    font-feature-settings: "cv11", "ss01"; /* Inter-style 数字 / 字符优化 */
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* 键盘焦点圈：accent 2px + 2px 偏移，键盘可达性 */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* 文本选区：accent 底 + 白字 */
+  ::selection {
+    background: var(--color-accent);
+    color: #ffffff;
+  }
+
+  /* 细滚动条（融入底色，存在感低） */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-ink-ghost) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-ink-ghost);
+    border: 3px solid transparent;
+    border-radius: 5px;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-ink-faint);
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+
+  /* 原生表单控件跟随主题 */
+  input[type="radio"],
+  input[type="checkbox"] {
+    accent-color: var(--color-accent);
+  }
+}
+
+/* ============================================================
+   微动效（克制，不抢戏；160-220ms）
+   ============================================================ */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* P6: in-flight tool progress line（对话内轻量进度行） */
+@keyframes tool-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+.tool-calling {
+  animation: tool-pulse 1.2s var(--ease-in-out-soft) infinite;
+}
+
+.studio-transition {
+  transition:
+    background-color var(--duration-control) var(--ease-in-out-soft),
+    border-color var(--duration-control) var(--ease-in-out-soft),
+    color var(--duration-control) var(--ease-in-out-soft),
+    opacity var(--duration-control) var(--ease-in-out-soft),
+    box-shadow var(--duration-control) var(--ease-in-out-soft),
+    transform var(--duration-control) var(--ease-out-soft);
+}
+
+/* 按压微弹（Linear 风）：仅指针设备、仅可交互元素，禁用态不缩放。
+   transform 已包含在 .studio-transition 的过渡清单中。 */
+@media (hover: hover) {
+  button.studio-transition:not([disabled]):not([aria-disabled="true"]):active,
+  [role="treeitem"].studio-transition:not([aria-disabled="true"]):active,
+  [role="option"].studio-transition:not([aria-disabled="true"]):active {
+    transform: scale(0.97);
+  }
+}
+
+/* 豁免开关：元素自身管理 transform（或按压不应有反馈）时使用 */
+.no-press:active {
+  transform: none;
+}
+
+/* 底部 Dock：高度随折叠/拖拽平滑（拖拽跟手期间由内联 style 关闭过渡） */
+.dock-shell {
+  transition: height var(--duration-panel) var(--ease-out-soft);
+}
+
+.reveal {
+  animation: var(--animate-rise);
+}
+
+/* AI 对话：消息渐入（新消息 160ms 上浮淡入，克制不抢戏） */
+@keyframes chat-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.chat-message {
+  animation: chat-in 0.16s var(--ease-out-soft) both;
+}
+
+/* 流式打字光标：呼吸闪烁 */
+@keyframes typing-blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.typing-cursor {
+  animation: typing-blink 0.9s var(--ease-in-out-soft) infinite;
+}
+
+/* prefers-reduced-motion：关闭全部动画（含 Tailwind 内置工具类） */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .tool-calling,
+  .chat-message,
+  .typing-cursor,
+  .animate-pulse,
+  .animate-spin,
+  .animate-bounce,
+  .animate-ping {
+    animation: none;
+  }
+  .studio-transition {
+    transition: none;
+  }
+  button.studio-transition:active,
+  [role="treeitem"].studio-transition:active,
+  [role="option"].studio-transition:active {
+    transform: none;
+  }
+  .dock-shell {
+    transition: none !important;
+  }
+  * {
+    scroll-behavior: auto;
+  }
+}

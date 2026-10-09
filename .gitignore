@@ -1,0 +1,48 @@
+# 本地运行时数据（含 API key 的 settings.json）
+/data/
+
+# 依赖与构建产物
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# 环境变量
+.env
+.env.local
+*.local
+
+# 生成项目与截图（运行时产物；仅仓库根的 projects/ 目录，避免误伤源码目录）
+/projects/
+apps/server/projects/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# git worktrees
+.worktrees/
+
+# E2E 运行时数据
+e2e/.data/
+
+# Playwright 运行产物
+test-results/
+playwright-report/
+
+output/
+
+# 手工 GUI 走查截图
+gui-test-screenshots/
+
+# Private local records and backups must not be published.
+*.log
+/.superpowers/
+/.tmp-split-backup/
+/.ai_test_temp/
+/LEDGER.md
+/HANDOFF*
+/docs/HANDOFF*
+/docs/design/
+/docs/research/
+/docs/superpowers/

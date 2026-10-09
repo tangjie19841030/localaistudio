@@ -1,0 +1,21 @@
+{
+  "name": "local-ai-ui-studio",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@11.24.0",
+  "engines": { "node": ">=22", "pnpm": ">=11" },
+  "scripts": {
+    "dev": "pnpm -r --parallel run dev",
+    "test": "pnpm -r run test",
+    "typecheck": "tsc --noEmit -p tsconfig.json && pnpm -r run typecheck",
+    "build": "pnpm -r run build",
+    "e2e": "pnpm exec playwright test -c e2e/playwright.config.ts"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/node": "^22.10.0",
+    "typescript": "^5.9.0",
+    "vitest": "^3.2.4"
+  }
+}
